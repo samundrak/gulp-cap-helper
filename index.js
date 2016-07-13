@@ -7,7 +7,7 @@ var inquirer = require('inquirer'),
         return (value && value.trim().length > 0);
     };
 
-module.exports = function (gulp) {
+module.exports = function (gulp, command) {
 
     var deployHelper = function () {
         new Promise(function (resolve, reject) {
@@ -98,5 +98,5 @@ module.exports = function (gulp) {
                     });
             }, null);
     }
-    gulp.tasks(command || 'deplloy', deployHelper);
+    gulp.task(command || 'deploy', deployHelper);
 }
