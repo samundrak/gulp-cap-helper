@@ -1,6 +1,7 @@
 var inquirer = require('inquirer'),
     childProcess = require('child_process'),
     Promise = require('bluebird'),
+   spawn_args = require('spawn-args'),
     questions = [],
     capName,
     validate = function (value) {
@@ -43,6 +44,10 @@ module.exports = function (gulp, command) {
                     type: 'confirm',
                     name: 'firstTime',
                     message: 'Not First time? '
+                }, {
+                    type: 'confirm',
+                    name: 'notify',
+                    message: 'You hate notify? '
                 }
                 ]);
 
@@ -59,7 +64,7 @@ module.exports = function (gulp, command) {
                     capMonitor;
                 inquirer.prompt(questions)
                     .then(function (answers) {
-                        console.log('Let me cap...');
+                        console.log('Let me cap... wait...');
 
                         childProcess.exec('git rev-parse --abbrev-ref HEAD', callBack.getBranch
                         (function (branch) {
@@ -70,7 +75,9 @@ module.exports = function (gulp, command) {
                                 ' branch=' + answers['branch'].trim();
 
                             (!answers['firstTime']) && (template += ' agentcis:set_up');
+                            (answers['notify'])     && (template += ' notify=false');
                             template += ' user=' + (answers['username'] || capName.trim());
+
 
 
                             if (!capName) {
@@ -80,7 +87,7 @@ module.exports = function (gulp, command) {
 
 
                             try {
-                                capMonitor = terminalSpawn('cap', template.split());
+                                capMonitor = terminalSpawn('cap',spawn_args(template));
                                 capMonitor.stdout.on('data', function (data) {
                                     console.log(data.toString());
                                 });
